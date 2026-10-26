@@ -222,7 +222,11 @@ const TC={
  spicy:["Cay","매운맛","Spicy"],mild:["Không cay","안 매운맛","Not spicy"],sideSp:["Món kèm","사이드","Side"],
  loc:["📍 Lấy vị trí hiện tại của tôi","📍 현재 위치 사용","📍 Use my current location"],locing:["Đang lấy vị trí…","위치 확인 중…","Getting location…"],
  locok:["✅ Đã ghim vị trí trên Google Maps","✅ 구글 지도 위치 저장됨","✅ Location pinned on Google Maps"],locview:["Xem","보기","View"],
- locno:["Không lấy được vị trí. Hãy bật định vị cho trình duyệt hoặc nhập địa chỉ.","위치를 가져올 수 없습니다. 위치 권한을 켜거나 주소를 입력해 주세요.","Couldn't get location. Allow location access or type the address."],
+ locno:["Không lấy được vị trí. Hãy bật định vị (GPS) trên điện thoại rồi thử lại, hoặc nhập địa chỉ.","위치를 가져올 수 없습니다. 휴대폰 위치(GPS)를 켜고 다시 시도하거나 주소를 입력해 주세요.","Couldn't get location. Turn on location (GPS) and try again, or type the address."],
+ locdeny:["Bạn đã chặn quyền vị trí. Vào cài đặt trình duyệt → Quyền trang web → Vị trí → cho phép, rồi thử lại. Hoặc nhập địa chỉ.","위치 권한이 차단되었습니다. 브라우저 설정 → 사이트 권한 → 위치에서 허용 후 다시 시도하거나 주소를 입력해 주세요.","Location permission is blocked. Allow it in browser settings → Site permissions → Location, or type the address."],
+ inapp:["Ứng dụng này (Zalo/Facebook) không cho lấy vị trí. Bấm ⋮ hoặc ··· ở góc trên → \"Mở bằng trình duyệt\" (Chrome/Safari), hoặc nhập địa chỉ bên dưới.","이 앱(잘로/페이스북)에서는 위치를 가져올 수 없습니다. 오른쪽 위 ⋮/··· → 브라우저로 열기(크롬/사파리) 또는 아래에 주소를 입력해 주세요.","This app (Zalo/Facebook) blocks location. Tap ⋮/··· at the top → Open in browser (Chrome/Safari), or type the address below."],
+ copyLink:["Chép link trang","링크 복사","Copy page link"],copiedLink:["Đã chép link – dán vào Chrome/Safari","링크 복사됨 – 크롬/사파리에 붙여넣기","Link copied – paste it in Chrome/Safari"],
+ mapPaste:["Hoặc dán link Google Maps vào ô địa chỉ","또는 주소 칸에 구글 지도 링크를 붙여넣기","Or paste a Google Maps link in the address box"],
  addrhint:["Số nhà, tên toà nhà, tầng…","동·호수, 건물명, 층…","House no., building, floor…"],addrOr:["Vị trí hoặc địa chỉ giao","배달 위치 또는 주소","Delivery location or address"],
  copied:["Đã chép đơn! Zalo đang mở — nhấn giữ ô chat, chọn Dán rồi Gửi.","주문이 복사되었습니다! 잘로가 열리면 채팅창을 길게 눌러 붙여넣기 후 전송하세요.","Order copied! In Zalo, long-press the chat box, Paste, then Send."],
  manual:["Không chép tự động được. Hãy chép đoạn dưới rồi dán vào Zalo:","자동 복사가 안 됩니다. 아래 내용을 복사해 잘로에 붙여넣으세요:","Couldn't copy automatically. Copy the text below and paste it in Zalo:"],
@@ -249,6 +253,7 @@ function optsOf(key){const c=key.split(":")[0],it=itemOf(key),o=[];
   return o}
 const optVal=(key,o)=>o.fixed?o.ch[0][0]:(bones[key+"|"+o.id]||o.ch[0][0]);
 const optText=(key,k)=>optsOf(key).map(o=>{const v=optVal(key,o),c=o.ch.find(x=>x[0]===v);return (o.pre?o.pre[k]+": ":"")+c[1][k]}).join(", ");
+const INAPP=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\/|KAKAOTALK|Messenger/i.test(navigator.userAgent);
 const mapUrl=g=>"https://maps.google.com/?q="+g.lat.toFixed(6)+","+g.lng.toFixed(6);
 const fmtd=d=>Math.round(d).toLocaleString("vi-VN")+"đ";
 const money=t=>{const sub=t*1000,vat=Math.round(sub*0.08);return{sub,vat,tot:sub+vat}};
@@ -278,6 +283,7 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
   <div class="fld"><label>${TC.type[k]}</label><div class="seg">${["take","deli"].map(x=>`<button type="button" data-t="${x}" aria-pressed="${otype===x}">${TC[x][k]}</button>`).join("")}</div></div>
   ${otype==="deli"?`<div class="fld"><label for="o-addr">${TC.addr[k]}</label>
     <button type="button" class="locbtn" id="o-loc">${geo?TC.locok[k]:TC.loc[k]}</button>
+    ${INAPP&&!geo?`<div class="mut sm">${TC.inapp[k]}</div>`:""}
     ${geo?`<a class="mut sm" href="${mapUrl(geo)}" target="_blank" rel="noopener">${TC.locview[k]}: ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)} (±${Math.round(geo.acc)}m) ›</a>`:""}
     <input id="o-addr" placeholder="${TC.addrhint[k]}" value="${esc(keep.addr)}"></div>`:""}
   <div class="fld"><label for="o-phone">${TC.phone[k]}</label><input id="o-phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" value="${esc(keep.phone)}"></div>
@@ -293,10 +299,15 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
   sh.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{otype=b.dataset.t;sheet()});
   document.getElementById("o-clear").onclick=()=>{cart={};save();document.querySelectorAll(".stp").forEach(e=>e.innerHTML=stp(e.dataset.k));bar();sheet()};
   const lb=document.getElementById("o-loc");if(lb)lb.onclick=()=>{const m=document.getElementById("o-msg");
-    if(!navigator.geolocation){m.hidden=false;m.className="msg err";m.textContent=TC.locno[k];return}
+    const fail=msg=>{lb.disabled=false;lb.textContent=TC.loc[k];m.hidden=false;m.className="msg err";
+      m.innerHTML=esc(msg)+(INAPP?`<button type="button" class="ghost" id="o-cplink" style="display:block;width:100%;margin-top:8px">${TC.copyLink[k]}</button>`:"")+`<div class="sm" style="margin-top:6px">${TC.mapPaste[k]}</div>`;
+      const c=document.getElementById("o-cplink");if(c)c.onclick=()=>{navigator.clipboard.writeText(location.href.split("#")[0]).then(()=>c.textContent=TC.copiedLink[k]).catch(()=>{})}};
+    if(!navigator.geolocation||!window.isSecureContext){fail(INAPP?TC.inapp[k]:TC.locno[k]);return}
     lb.disabled=true;lb.textContent=TC.locing[k];
-    navigator.geolocation.getCurrentPosition(p=>{geo={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy};sheet()},
-      ()=>{lb.disabled=false;lb.textContent=TC.loc[k];m.hidden=false;m.className="msg err";m.textContent=TC.locno[k]},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})};
+    const ok=p=>{geo={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy};sheet()};
+    const err=e=>{if(e&&e.code===1){fail(INAPP?TC.inapp[k]:TC.locdeny[k]);return}
+      navigator.geolocation.getCurrentPosition(ok,e2=>fail(e2&&e2.code===1?(INAPP?TC.inapp[k]:TC.locdeny[k]):(INAPP?TC.inapp[k]:TC.locno[k])),{enableHighAccuracy:false,timeout:20000,maximumAge:300000})};
+    navigator.geolocation.getCurrentPosition(ok,err,{enableHighAccuracy:true,timeout:10000,maximumAge:60000})};
   document.getElementById("o-send").onclick=sendTG;const zb=document.getElementById("o-zalo");if(zb)zb.onclick=send;
   const ph=document.getElementById("o-phone");ph.oninput=()=>{const v=ph.value.replace(/\D/g,"").slice(0,10);if(v!==ph.value)ph.value=v}}
 function orderText(){const typ={take:"Mang về",deli:"Giao hàng"}[otype];
