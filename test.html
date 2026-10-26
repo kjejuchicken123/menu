@@ -146,6 +146,7 @@ body.hascart main{padding-bottom:84px}
 .mut{color:var(--muted)}.sm{font-size:12px;margin:2px 0 0}
 .send{display:block;width:100%;text-align:center;text-decoration:none;margin-top:14px;border:0;border-radius:14px;padding:15px;background:#0068ff;color:#fff;font:800 16px var(--body);cursor:pointer}
 .send[disabled]{opacity:.4;cursor:default}
+.locbtn{width:100%;border:1.5px dashed var(--brand);background:#fff;color:var(--brand);border-radius:12px;padding:11px;font:700 14px var(--body);cursor:pointer}
 .zl{display:block;width:100%;margin-top:10px;color:#0068ff;border-color:#b9d3ff}
 .row2{display:flex;gap:8px;margin-top:10px}.ghost{flex:1;text-align:center;text-decoration:none;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:12px;padding:11px;font:600 14px var(--body);cursor:pointer}
 .msg{margin:12px 0 0;padding:10px 12px;border-radius:12px;font-size:14px;background:var(--chip)}.msg[hidden]{display:none}.msg.ok{background:#e6f4ea;color:#185c2b}.msg.err{background:#fde8e4;color:#9f2a12}
@@ -215,6 +216,10 @@ const TC={
  sent:["✅ Đã gửi đơn! Quán sẽ gọi cho bạn để xác nhận trong ít phút.","✅ 주문이 접수되었습니다! 곧 전화로 확인해 드리겠습니다.","✅ Order sent! We'll call you shortly to confirm."],
  fail:["Chưa gửi được (mạng yếu?). Thử lại, hoặc gọi 0896 615 574.","전송 실패. 다시 시도하거나 0896 615 574로 전화해 주세요.","Couldn't send. Try again or call 0896 615 574."],call:["Gọi điện","전화하기","Call"],clear:["Xoá đơn","전체 삭제","Clear"],
  need:["Vui lòng điền","입력해 주세요","Please fill in"],
+ loc:["📍 Lấy vị trí hiện tại của tôi","📍 현재 위치 사용","📍 Use my current location"],locing:["Đang lấy vị trí…","위치 확인 중…","Getting location…"],
+ locok:["✅ Đã ghim vị trí trên Google Maps","✅ 구글 지도 위치 저장됨","✅ Location pinned on Google Maps"],locview:["Xem","보기","View"],
+ locno:["Không lấy được vị trí. Hãy bật định vị cho trình duyệt hoặc nhập địa chỉ.","위치를 가져올 수 없습니다. 위치 권한을 켜거나 주소를 입력해 주세요.","Couldn't get location. Allow location access or type the address."],
+ addrhint:["Số nhà, tên toà nhà, tầng…","동·호수, 건물명, 층…","House no., building, floor…"],addrOr:["Vị trí hoặc địa chỉ giao","배달 위치 또는 주소","Delivery location or address"],
  copied:["Đã chép đơn! Zalo đang mở — nhấn giữ ô chat, chọn Dán rồi Gửi.","주문이 복사되었습니다! 잘로가 열리면 채팅창을 길게 눌러 붙여넣기 후 전송하세요.","Order copied! In Zalo, long-press the chat box, Paste, then Send."],
  manual:["Không chép tự động được. Hãy chép đoạn dưới rồi dán vào Zalo:","자동 복사가 안 됩니다. 아래 내용을 복사해 잘로에 붙여넣으세요:","Couldn't copy automatically. Copy the text below and paste it in Zalo:"],
  openz:["Mở Zalo","잘로 열기","Open Zalo"],
@@ -226,7 +231,8 @@ const TC={
 const ZALO="https://zalo.me/0896615574";
 const ORDER_URL="https://script.google.com/macros/s/AKfycbyqJijFyqCNVQYfFbNi9kjTsC0P_kbYlfCQ9CNSTqlJ3igrAUTX0lCuhegQBRt_kOjF7Q/exec";
 let cart={};try{cart=JSON.parse(localStorage.getItem("kj-cart")||"{}")||{}}catch(e){cart={}}
-let otype="take";
+let otype="take",geo=null;
+const mapUrl=g=>"https://maps.google.com/?q="+g.lat.toFixed(6)+","+g.lng.toFixed(6);
 const fmtd=d=>Math.round(d).toLocaleString("vi-VN")+"đ";
 const money=t=>{const sub=t*1000,vat=Math.round(sub*0.08);return{sub,vat,tot:sub+vat}};
 const esc=x=>String(x).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -251,7 +257,10 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
     return `<li><span class="nm">${it.n[k]}</span><span class="stp" data-k="${key}">${stp(key)}</span><span class="pr">${fmt(q*it.p)}</span></li>`}).join("");
   sh.querySelector(".body").innerHTML=`<h3>${TC.title[k]}</h3>${rows?`<ul class="lines">${rows}</ul>`:`<p class="mut">${TC.empty[k]}</p>`}
   <div class="fld"><label>${TC.type[k]}</label><div class="seg">${["take","deli"].map(x=>`<button type="button" data-t="${x}" aria-pressed="${otype===x}">${TC[x][k]}</button>`).join("")}</div></div>
-  ${otype==="deli"?`<div class="fld"><label for="o-addr">${TC.addr[k]}</label><input id="o-addr" value="${esc(keep.addr)}"></div>`:""}
+  ${otype==="deli"?`<div class="fld"><label for="o-addr">${TC.addr[k]}</label>
+    <button type="button" class="locbtn" id="o-loc">${geo?TC.locok[k]:TC.loc[k]}</button>
+    ${geo?`<a class="mut sm" href="${mapUrl(geo)}" target="_blank" rel="noopener">${TC.locview[k]}: ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)} (±${Math.round(geo.acc)}m) ›</a>`:""}
+    <input id="o-addr" placeholder="${TC.addrhint[k]}" value="${esc(keep.addr)}"></div>`:""}
   <div class="fld"><label for="o-phone">${TC.phone[k]}</label><input id="o-phone" type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel" value="${esc(keep.phone)}"></div>
   <div class="fld"><label for="o-note">${TC.note[k]}</label><textarea id="o-note" rows="2">${esc(keep.note)}</textarea></div>
   ${rows?`<div class="fld"><label>${TC.extraH[k]}</label><ul class="lines extras2">${EXTRAS.map(e=>{const key="x:"+e.id,q=cart[key]||0;return `<li><span class="nm">${e.n[k]} <small class="mut">+${fmt(e.p)} ${TC.each[k]}</small></span><span class="stp" data-k="${key}">${stp(key)}</span><span class="pr">${q?fmt(q*e.p):""}</span></li>`}).join("")}</ul></div>`:""}
@@ -263,11 +272,16 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
   <div class="row2"><a class="ghost" href="tel:0896615574">📞 ${TC.call[k]}</a><button type="button" class="ghost" id="o-clear">${TC.clear[k]}</button></div>`;
   sh.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{otype=b.dataset.t;sheet()});
   document.getElementById("o-clear").onclick=()=>{cart={};save();document.querySelectorAll(".stp").forEach(e=>e.innerHTML=stp(e.dataset.k));bar();sheet()};
+  const lb=document.getElementById("o-loc");if(lb)lb.onclick=()=>{const m=document.getElementById("o-msg");
+    if(!navigator.geolocation){m.hidden=false;m.className="msg err";m.textContent=TC.locno[k];return}
+    lb.disabled=true;lb.textContent=TC.locing[k];
+    navigator.geolocation.getCurrentPosition(p=>{geo={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy};sheet()},
+      ()=>{lb.disabled=false;lb.textContent=TC.loc[k];m.hidden=false;m.className="msg err";m.textContent=TC.locno[k]},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})};
   document.getElementById("o-send").onclick=sendTG;const zb=document.getElementById("o-zalo");if(zb)zb.onclick=send;
   const ph=document.getElementById("o-phone");ph.oninput=()=>{const v=ph.value.replace(/\D/g,"").slice(0,10);if(v!==ph.value)ph.value=v}}
 function orderText(){const typ={take:"Mang về",deli:"Giao hàng"}[otype];
   const L2=["🧾 ĐƠN MỚI – K-JEJU CHICKEN","Hình thức: "+typ];
-  if(otype==="deli")L2.push("Địa chỉ: "+fv("o-addr").trim());
+  if(otype==="deli"){if(fv("o-addr").trim())L2.push("Địa chỉ: "+fv("o-addr").trim());if(geo)L2.push("📍 Vị trí: "+mapUrl(geo)+" (±"+Math.round(geo.acc)+"m)")}
   L2.push("SĐT: "+fv("o-phone").trim());
   for(const [key,q] of Object.entries(cart)){const it=itemOf(key);if(!it)continue;L2.push(`• ${q} × ${it.n[0]} – ${fmt(q*it.p)}`);
     if(key.startsWith("combo:")&&it.d){const parts=it.d[0].split(" · ");L2.push("   Gồm: "+parts[0]);if(parts[1])L2.push("   "+parts.slice(1).join(" · ").replace(/(\d+)(\s*lon)/,(m0,n,r)=>(+n*q)+r))}}
@@ -276,7 +290,7 @@ function orderText(){const typ={take:"Mang về",deli:"Giao hàng"}[otype];
   if(lang!=="vi")L2.push("(Khách xem menu bằng "+(lang==="ko"?"tiếng Hàn":"tiếng Anh")+")");
   return L2.join("\n")}
 function check(){const k=L[lang],m=document.getElementById("o-msg");
-  const miss=[];if(otype==="deli"&&!fv("o-addr").trim())miss.push(TC.addr[k]);
+  const miss=[];if(otype==="deli"&&!fv("o-addr").trim()&&!geo)miss.push(TC.addrOr[k]);
   const ph=fv("o-phone").trim();if(!ph)miss.push(TC.phone[k]);m.hidden=false;
   if(miss.length){m.className="msg err";m.textContent=TC.need[k]+": "+miss.join(", ");return false}
   if(!/^[0-9]{10}$/.test(ph)){m.className="msg err";m.textContent=TC.badphone[k];return false}return true}
@@ -285,7 +299,7 @@ async function sendTG(){const k=L[lang],m=document.getElementById("o-msg"),b=doc
   if(sending||!check())return;sending=true;b.disabled=true;b.textContent=TC.sending[k];m.hidden=true;
   try{const mm=money(sum().t);
     const items=Object.entries(cart).map(([key,q])=>{const it=itemOf(key);return it?q+" × "+it.n[0]:""}).filter(Boolean).join("; ");
-    const payload={phone:fv("o-phone").trim(),type:{take:"Mang về",deli:"Giao hàng"}[otype],addr:fv("o-addr").trim(),items,sub:mm.sub,vat:mm.vat,total:mm.tot,note:fv("o-note").trim(),lang,text:orderText()};
+    const payload={phone:fv("o-phone").trim(),type:{take:"Mang về",deli:"Giao hàng"}[otype],addr:[fv("o-addr").trim(),geo?mapUrl(geo):""].filter(Boolean).join(" | "),items,sub:mm.sub,vat:mm.vat,total:mm.tot,note:fv("o-note").trim(),lang,text:orderText()};
     const r=await fetch(ORDER_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
     const j=await r.json();if(!j.ok)throw new Error(j.error);
     m.hidden=false;m.className="msg ok";m.textContent=TC.sent[k];
@@ -295,7 +309,7 @@ async function sendTG(){const k=L[lang],m=document.getElementById("o-msg"),b=doc
   }catch(e){m.hidden=false;m.className="msg err";m.textContent=TC.fail[k];b.disabled=false;b.textContent=TC.send[k]}
   sending=false}
 async function send(){const k=L[lang],m=document.getElementById("o-msg");
-  const miss=[];if(otype==="deli"&&!fv("o-addr").trim())miss.push(TC.addr[k]);
+  const miss=[];if(otype==="deli"&&!fv("o-addr").trim()&&!geo)miss.push(TC.addrOr[k]);
   const ph=fv("o-phone").trim();if(!ph)miss.push(TC.phone[k]);
   m.hidden=false;
   if(miss.length){m.className="msg err";m.textContent=TC.need[k]+": "+miss.join(", ");return}
