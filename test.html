@@ -314,6 +314,9 @@ function check(){const k=L[lang],m=document.getElementById("o-msg");
   const ph=fv("o-phone").trim();if(!ph)miss.push(TC.phone[k]);m.hidden=false;
   if(miss.length){m.className="msg err";m.textContent=TC.need[k]+": "+miss.join(", ");return false}
   if(!/^[0-9]{10}$/.test(ph)){m.className="msg err";m.textContent=TC.badphone[k];return false}return true}
+function payloadOf(via){const mm=money(sum().t);
+  const items=Object.entries(cart).map(([key,q])=>{const it=itemOf(key);return it?q+" × "+it.n[0]+(optText(key,0)?" ("+optText(key,0)+")":""):""}).filter(Boolean).join("; ");
+  return {phone:fv("o-phone").trim(),type:{take:"Mang về",deli:"Giao hàng"}[otype]+(via?" – "+via:""),addr:[fv("o-addr").trim(),geo?mapUrl(geo):""].filter(Boolean).join(" | "),items,sub:mm.sub,vat:mm.vat,total:mm.tot,note:fv("o-note").trim(),lang,text:(via?"💬 KHÁCH GỬI QUA ZALO – kiểm tra Zalo\n":"")+orderText()}}
 let sending=false;
 async function sendTG(){const k=L[lang],m=document.getElementById("o-msg"),b=document.getElementById("o-send");
   if(sending||!check())return;sending=true;b.disabled=true;b.textContent=TC.sending[k];m.hidden=true;
@@ -335,6 +338,7 @@ async function send(){const k=L[lang],m=document.getElementById("o-msg");
   if(miss.length){m.className="msg err";m.textContent=TC.need[k]+": "+miss.join(", ");return}
   if(!/^[0-9]{10}$/.test(ph)){m.className="msg err";m.textContent=TC.badphone[k];return}
   const txt=orderText();let ok=false;
+  try{fetch(ORDER_URL,{method:"POST",keepalive:true,headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payloadOf("qua Zalo"))}).catch(()=>{})}catch(e){}
   try{await navigator.clipboard.writeText(txt);ok=true}catch(e){
     try{const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";document.body.append(ta);ta.select();ok=document.execCommand("copy");ta.remove()}catch(e2){}}
   if(ok){m.className="msg ok";m.innerHTML=`${TC.copied[k]}<a class="send" href="${ZALO}" target="_blank" rel="noopener">${TC.openz[k]} ›</a>`;
