@@ -87,7 +87,7 @@ footer .wrap{padding-block:8px 36px;color:var(--muted);font-size:13px;display:gr
 #locdlg .ld-box{position:relative;width:min(440px,100%);background:var(--paper,#fff);border-radius:20px 20px 0 0;padding:22px 20px calc(18px + env(safe-area-inset-bottom));display:grid;gap:10px;box-shadow:0 -8px 30px rgba(0,0,0,.25)}
 #locdlg .ld-ic{font-size:34px;text-align:center;line-height:1}#locdlg h4{margin:0;text-align:center;font:700 19px var(--body)}
 #locdlg p{margin:0;font-size:14.5px;line-height:1.5;text-align:center}#locdlg ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.45}
-#locdlg .send,#locdlg .ghost{width:100%;text-align:center}#locdlg .sm{font-size:12.5px}.seg.cc button{display:inline-flex;align-items:center;justify-content:center;gap:6px}.seg.cc svg,.phonebox svg{border-radius:2px;flex:none}.phonebox{display:flex;align-items:center;gap:8px;margin-top:8px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:0 0 0 12px}.phonebox b{font:700 16px var(--body);color:#2b2420}.phonebox input{flex:1;min-width:0;border:0!important;outline:0;background:transparent;letter-spacing:.04em;margin:0!important;box-shadow:none!important}.phonebox:focus-within{border-color:var(--brand)}.bone.need{outline:2px solid #e5484d;outline-offset:3px;border-radius:8px;background:#fff1f1}
+#locdlg .send,#locdlg .ghost{width:100%;text-align:center}#locdlg .sm{font-size:12.5px}.seg.cc button{white-space:nowrap;padding:9px 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px}.seg.cc svg,.phonebox svg{border-radius:2px;flex:none}.phonebox{display:flex;align-items:center;gap:8px;margin-top:8px;border:1px solid var(--line);background:#fff;border-radius:12px;padding:0 0 0 12px}.phonebox b{font:700 16px var(--body);color:#2b2420}.phonebox input{flex:1;min-width:0;border:0!important;outline:0;background:transparent;letter-spacing:.04em;margin:0!important;box-shadow:none!important}.phonebox:focus-within{border-color:var(--brand)}.bone.need{outline:2px solid #e5484d;outline-offset:3px;border-radius:8px;background:#fff1f1}
 header.band{position:relative;overflow:hidden}header.band::after{content:"";position:absolute;right:-26px;bottom:-34px;width:170px;height:170px;background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.9%22%3E%3Cpath%20d%3D%22M16%204.5c1.6%200%202.8%201.1%203.2%202.5C24.8%208%2028%2012.4%2028%2017.6%2028%2024%2022.6%2029%2016%2029S4%2024%204%2017.6C4%2012.4%207.2%208%2012.8%207c.4-1.4%201.6-2.5%203.2-2.5z%22/%3E%3Cpath%20d%3D%22M16.5%205.5c1.5-3.5%206-4.6%209-3-2%203.2-5.8%204.4-9%203zM16%207V4M10%2014c1-2%203-3%205-3%22/%3E%3C/svg%3E") center/contain no-repeat;opacity:.22;pointer-events:none;transform:rotate(-12deg)}header.band .wrap{position:relative;z-index:1}
 .ob{display:inline-block;margin-left:6px;padding:2px 9px;border-radius:999px;font:700 12.5px var(--body);vertical-align:1px}.ob.on{background:#fff;color:#16833a}.ob.off{background:rgba(0,0,0,.28);color:#fff}
 header.band .info{gap:10px;font-size:14px;line-height:1.4}header.band .info .row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}header.band .info b{font-weight:600}.pill{justify-self:end;min-width:128px;box-sizing:border-box;text-align:center;margin:0!important;padding:4px 10px!important;font:600 12.5px/1.2 var(--body)!important;text-decoration:none;white-space:nowrap}@media (min-width:900px){.scene{height:270px!important;background-size:contain!important;background-position:center bottom!important}}
@@ -247,8 +247,9 @@ const TC={
  typeAddr:["Nhập địa chỉ thay thế","주소 직접 입력","Type the address instead"],
  dineOnly:["Chỉ bán tại quán","매장 전용","Dine-in only"],
  dineErr:["Nước ép chỉ bán tại quán. Vui lòng bỏ nước ép khỏi đơn.","생과일 주스는 매장에서만 판매합니다. 주문에서 빼 주세요.","Juices are dine-in only. Please remove them from the order."],
- ccVn:["Số Việt Nam","베트남 번호","Vietnam number"],ccKr:["Số Hàn Quốc","한국 번호","Korean number"],
+ ccVn:["Việt Nam","베트남 번호","Vietnam number"],ccKr:["Hàn Quốc","한국 번호","Korean number"],ccOt:["Khác","기타 번호","Other"],
  badVn:["Số Việt Nam gồm 9 số sau +84 (vd +84 397 787 770)","베트남 번호는 +84 뒤 9자리입니다 (예: +84 397 787 770)","Vietnam numbers have 9 digits after +84 (e.g. +84 397 787 770)"],
+ badOt:["Nhập mã quốc gia rồi đến số (vd 1 234 567 8900)","국가번호부터 입력해 주세요 (예: 1 234 567 8900)","Enter country code then number (e.g. 1 234 567 8900)"],
  badKr:["Số Hàn bắt đầu bằng 10, gồm 9–10 số sau +82 (vd +82 10 1234 5678)","한국 번호는 +82 뒤 10으로 시작하는 9–10자리입니다 (예: +82 10 1234 5678)","Korean numbers start with 10, 9–10 digits after +82 (e.g. +82 10 1234 5678)"],
  total:["Tạm tính","소계","Subtotal"],vat:["VAT 8%","부가세 8%","VAT 8%"],grand:["Tổng cộng","총 결제금액","Total"],extraH:["Thêm","추가","Add-ons"],each:["/ phần","/ 1개","each"],
  badphone:["Số điện thoại phải đủ 10 chữ số","전화번호는 숫자 10자리로 입력해 주세요","Phone number must be exactly 10 digits"],
@@ -285,16 +286,17 @@ const ZALO="https://zalo.me/0896615574";
 const ORDER_URL="https://script.google.com/macros/s/AKfycbyqJijFyqCNVQYfFbNi9kjTsC0P_kbYlfCQ9CNSTqlJ3igrAUTX0lCuhegQBRt_kOjF7Q/exec";
 let cart={};try{cart=JSON.parse(localStorage.getItem("kj-cart2")||"{}")||{}}catch(e){cart={}}
 let otype="take",geo=null;
-let cc="vn";try{const c=localStorage.getItem("kj-cc");if(c==="vn"||c==="kr")cc=c;else if(location.hash==="#ko"||localStorage.getItem("kj-lang")==="ko")cc="kr"}catch(e){}
+let cc="vn";try{const c=localStorage.getItem("kj-cc");if(c==="vn"||c==="kr"||c==="xx")cc=c;else if(location.hash==="#ko"||localStorage.getItem("kj-lang")==="ko")cc="kr"}catch(e){}
 const FLAG={vn:'<svg viewBox="0 0 30 20" width="24" height="16" aria-hidden="true"><rect width="30" height="20" fill="#da251d"/><path fill="#ff0" d="M15 4.2l1.36 4.18h4.4l-3.56 2.59 1.36 4.18L15 12.56l-3.56 2.59 1.36-4.18-3.56-2.59h4.4z"/></svg>',
- kr:'<svg viewBox="0 0 30 20" width="24" height="16" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#ddd" stroke-width=".6"/><g transform="rotate(-33.7 15 10)"><path d="M10 10a5 5 0 0 1 10 0z" fill="#cd2e3a"/><path d="M10 10a5 5 0 0 0 10 0z" fill="#0047a0"/><circle cx="12.5" cy="10" r="2.5" fill="#cd2e3a"/><circle cx="17.5" cy="10" r="2.5" fill="#0047a0"/></g><g stroke="#000" stroke-width="1"><path d="M4.2 4.6l2.6-2.5M5.1 5.5l2.6-2.5M6 6.4l2.6-2.5M21.4 13.6l2.6 2.5M22.3 12.7l2.6 2.5M23.2 11.8l2.6 2.5M21.4 6.4l2.6-2.5M23.2 4.6l2.6-2.5M4.2 15.4l2.6 2.5M6 13.6l2.6 2.5"/></g></svg>'};
-const CODE={vn:"+84",kr:"+82"};
-const pDigits=v=>{let d=String(v||"").replace(/\D/g,"");if(d[0]==="0")d=d.slice(1);const c=cc==="vn"?"84":"82",n=cc==="vn"?9:10;
+ kr:'<svg viewBox="0 0 30 20" width="24" height="16" aria-hidden="true"><rect width="30" height="20" fill="#fff" stroke="#ddd" stroke-width=".6"/><g transform="rotate(-33.7 15 10)"><path d="M10 10a5 5 0 0 1 10 0z" fill="#cd2e3a"/><path d="M10 10a5 5 0 0 0 10 0z" fill="#0047a0"/><circle cx="12.5" cy="10" r="2.5" fill="#cd2e3a"/><circle cx="17.5" cy="10" r="2.5" fill="#0047a0"/></g><g stroke="#000" stroke-width="1"><path d="M4.2 4.6l2.6-2.5M5.1 5.5l2.6-2.5M6 6.4l2.6-2.5M21.4 13.6l2.6 2.5M22.3 12.7l2.6 2.5M23.2 11.8l2.6 2.5M21.4 6.4l2.6-2.5M23.2 4.6l2.6-2.5M4.2 15.4l2.6 2.5M6 13.6l2.6 2.5"/></g></svg>',
+ xx:'<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>'};
+const CODE={vn:"+84",kr:"+82",xx:"+"};
+const pDigits=v=>{let d=String(v||"").replace(/\D/g,"");if(cc==="xx")return d.replace(/^0+/,"").slice(0,15);if(d[0]==="0")d=d.slice(1);const c=cc==="vn"?"84":"82",n=cc==="vn"?9:10;
   if(d.startsWith(c)&&d.length>n)d=d.slice(2);if(d[0]==="0")d=d.slice(1);return d?"0"+d.slice(0,n):""};
-const fmtPhone=v=>{const r=pDigits(v).slice(1);if(cc==="vn")return [r.slice(0,3),r.slice(3,6),r.slice(6)].filter(Boolean).join(" ");
+const fmtPhone=v=>{if(cc==="xx")return pDigits(v);const r=pDigits(v).slice(1);if(cc==="vn")return [r.slice(0,3),r.slice(3,6),r.slice(6)].filter(Boolean).join(" ");
   return (r.length<=9?[r.slice(0,2),r.slice(2,5),r.slice(5)]:[r.slice(0,2),r.slice(2,6),r.slice(6)]).filter(Boolean).join(" ")};
-const phoneOk=d=>cc==="vn"?/^0[0-9]{9}$/.test(d):/^01[0-9]{8,9}$/.test(d);
-const phoneShow=d=>CODE[cc]+" "+fmtPhone(d);
+const phoneOk=d=>cc==="xx"?/^[1-9][0-9]{6,14}$/.test(d):cc==="vn"?/^0[0-9]{9}$/.test(d):/^01[0-9]{8,9}$/.test(d);
+const phoneShow=d=>cc==="xx"?"+"+d:CODE[cc]+" "+fmtPhone(d);
 let bones={};try{bones=JSON.parse(sessionStorage.getItem("kj-opt")||"{}")||{}}catch(e){bones={}}
 const SODA=[["coca","Coca"],["zero","Coca Zero"],["sprite","Sprite"],["fanta","Fanta"]];
 const SOFT_KEY="drinks:4";
@@ -358,8 +360,8 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
     ${INAPP&&!geo?`<div class="mut sm">${TC.inapp[k]}</div>`:""}
     ${geo?`<a class="mut sm" href="${mapUrl(geo)}" target="_blank" rel="noopener">${TC.locview[k]}: ${geo.lat.toFixed(5)}, ${geo.lng.toFixed(5)} (±${Math.round(geo.acc)}m) ›</a>`:""}
     <input id="o-addr" placeholder="${TC.addrhint[k]}" value="${esc(keep.addr)}"></div>`:""}
-  <div class="fld"><label for="o-phone">${TC.phone[k]}</label><div class="seg cc">${["vn","kr"].map(x=>`<button type="button" data-cc="${x}" aria-pressed="${cc===x}">${FLAG[x]} ${(x==="vn"?TC.ccVn:TC.ccKr)[k]}</button>`).join("")}</div>
-    <div class="phonebox">${FLAG[cc]}<b>${CODE[cc]}</b><input id="o-phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="${cc==="vn"?"397 787 770":"10 1234 5678"}" value="${esc(keep.phone?fmtPhone(keep.phone):"")}"></div></div>
+  <div class="fld"><label for="o-phone">${TC.phone[k]}</label><div class="seg cc">${["vn","kr","xx"].map(x=>`<button type="button" data-cc="${x}" aria-pressed="${cc===x}">${FLAG[x]} ${({vn:TC.ccVn,kr:TC.ccKr,xx:TC.ccOt})[x][k]}</button>`).join("")}</div>
+    <div class="phonebox">${FLAG[cc]}<b>${CODE[cc]}</b><input id="o-phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="${cc==="vn"?"397 787 770":cc==="kr"?"10 1234 5678":"1 234 567 8900"}" value="${esc(keep.phone?fmtPhone(keep.phone):"")}"></div></div>
   <div class="fld"><label for="o-note">${TC.note[k]}</label><textarea id="o-note" rows="2" placeholder="${TC.notePh[k]}">${esc(keep.note)}</textarea></div>
   ${rows?`<div class="fld"><label>${TC.extraH[k]}</label><ul class="lines extras2">${EXTRAS.map(e=>{const key="x:"+e.id,q=cart[key]||0;return `<li><span class="nm">${e.n[k]} <small class="mut">+${fmt(e.p)} ${TC.each[k]}</small></span><span class="stp" data-k="${key}">${stp(key)}</span><span class="pr">${q?fmt(q*e.p):""}</span></li>`}).join("")}</ul></div>`:""}
   ${(()=>{const m=money(t);return `<div class="sums"><div><span>${TC.total[k]}</span><span>${fmtd(m.sub)}</span></div><div><span>${TC.vat[k]}</span><span>${fmtd(m.vat)}</span></div><div class="tot"><span>${TC.grand[k]}</span><b>${fmtd(m.tot)}</b></div></div>`})()}
@@ -402,7 +404,7 @@ function check(){const k=L[lang],m=document.getElementById("o-msg");
   const miss=[];if(otype==="deli"&&!fv("o-addr").trim()&&!geo)miss.push(TC.addrOr[k]);
   const ph=pDigits(fv("o-phone"));if(!ph)miss.push(TC.phone[k]);m.hidden=false;
   if(miss.length){m.className="msg err";m.textContent=TC.need[k]+": "+miss.join(", ");return false}
-  if(!phoneOk(ph)){m.className="msg err";m.textContent=(cc==="vn"?TC.badVn:TC.badKr)[k];return false}
+  if(!phoneOk(ph)){m.className="msg err";m.textContent=({vn:TC.badVn,kr:TC.badKr,xx:TC.badOt})[cc][k];return false}
   for(const key of Object.keys(cart)){if(dineOnly(key)){m.className="msg err";m.textContent=TC.dineErr[k];return false}
     }
   const miss2=Object.keys(cart).filter(key=>optsOf(key).some(o=>optMissing(key,o)));
@@ -419,7 +421,7 @@ async function sendTG(){const k=L[lang],m=document.getElementById("o-msg"),b=doc
     const combo={};Object.keys(cart).filter(x=>x.startsWith("combo:")).forEach(x=>{const r=comboX(x);combo[x]={chk:r.chk,sideName:r.sideName||"",side:r.side||""}});
     const payload={phone:pDigits(fv("o-phone")),cc,hot,combo,type:otype,addr:fv("o-addr").trim(),geo:geo?mapUrl(geo):"",acc:geo?Math.round(geo.acc):0,cart,opts,total:mm.tot,note:fv("o-note").trim(),lang,page:/test\.html$/.test(location.pathname)?"test":"index",hp:fv("o-hp")};
     const r=await fetch(ORDER_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
-    const j=await r.json();if(!j.ok){const ek={closed:"closed",limit:"limit",busy:"busy",item:"stale",dine:"dineErr",phone:cc==="vn"?"badVn":"badKr"}[j.error];if(ek){m.hidden=false;m.className="msg err";m.textContent=TC[ek][k];b.disabled=false;b.textContent=TC.send[k];sending=false;return}throw new Error(j.error)}
+    const j=await r.json();if(!j.ok){const ek={closed:"closed",limit:"limit",busy:"busy",item:"stale",dine:"dineErr",phone:{vn:"badVn",kr:"badKr",xx:"badOt"}[cc]}[j.error];if(ek){m.hidden=false;m.className="msg err";m.textContent=TC[ek][k];b.disabled=false;b.textContent=TC.send[k];sending=false;return}throw new Error(j.error)}
     m.hidden=false;m.className="msg ok";m.textContent=TC.sent[k];
     cart={};save();bones={};showNeed=false;try{sessionStorage.removeItem("kj-opt")}catch(e){};document.querySelectorAll("#menu .stp").forEach(e=>e.innerHTML=stp(e.dataset.k));bar();
     b.textContent="✓";const zb=document.getElementById("o-zalo");if(zb)zb.remove();
