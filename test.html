@@ -381,12 +381,18 @@ function sheet(){const k=L[lang],sh=document.getElementById("sheet"),{t}=sum();
   const lb=document.getElementById("o-loc");if(lb)lb.onclick=getLoc;
   document.getElementById("o-send").onclick=sendTG;const zb=document.getElementById("o-zalo");if(zb)zb.onclick=send;
   const ph=document.getElementById("o-phone");ph.oninput=()=>{const v=fmtPhone(ph.value);if(v!==ph.value)ph.value=v}}
+function comboX(key){const r={};optsOf(key).forEach(o=>{let v="";if(o.multi)v=multiSel(key,o).map(y=>o.ch.find(c=>c[0]===y)[1][0]).join(" + ");else{const c=o.ch.find(c=>c[0]===optVal(key,o));v=c?c[1][0]:""}
+    if(o.id==="sauce")r.sauce=v;if(o.id==="bone"&&!o.fixed)r.bone=v;if(o.id==="sp"){r.sideName=o.pre?o.pre[0]:"";r.side=v}});
+  r.chk=[r.sauce,r.bone].filter(Boolean).join(", ");return r}
+function comboComps(key,txt){const x=comboX(key),c=txt.split(" + ");if(x.chk)c[0]+=" ("+x.chk+")";
+  if(x.sideName&&x.side){const i=c.findIndex(s=>s.toLowerCase().includes(x.sideName.toLowerCase()));if(i>=0)c[i]+=" ("+x.side+")"}return c.join(" + ")}
 function orderText(){const typ={take:"Mang về",deli:"Giao hàng"}[otype];
   const L2=["🧾 ĐƠN MỚI – K-JEJU CHICKEN","Hình thức: "+typ];
   if(otype==="deli"){if(fv("o-addr").trim())L2.push("Địa chỉ: "+fv("o-addr").trim());if(geo)L2.push("📍 Vị trí: "+mapUrl(geo)+" (±"+Math.round(geo.acc)+"m)")}
   L2.push("SĐT: "+phoneShow(pDigits(fv("o-phone"))));
-  for(const [key,q] of Object.entries(cart)){const it=itemOf(key);if(!it)continue;L2.push(`• ${q} × ${it.n[0]}${optText(key,0)?" ("+optText(key,0)+")":""} – ${fmt(q*unitP(key))}`);
-    if(key.startsWith("combo:")&&it.d){const parts=it.d[0].split(" · ");L2.push("   Gồm: "+parts[0]);if(parts[1])L2.push("   "+parts.slice(1).join(" · ").replace(/(\d+)(\s*lon)/,(m0,n,r)=>(+n*q)+r))}}
+  for(const [key,q] of Object.entries(cart)){const it=itemOf(key);if(!it)continue;
+    if(key.startsWith("combo:")&&it.d){const parts=it.d[0].split(" · ");L2.push(`• ${q} × ${it.n[0]}`);L2.push("   Gồm: "+comboComps(key,parts[0]));if(parts[1])L2.push("   "+parts.slice(1).join(" · ").replace(/(\d+)(\s*lon)/,(m0,n,r)=>(+n*q)+r));continue}
+    L2.push(`• ${q} × ${it.n[0]}${optText(key,0)?" ("+optText(key,0)+")":""} – ${fmt(q*unitP(key))}`)}
   const m=money(sum().t);L2.push("Tạm tính: "+fmtd(m.sub),"VAT 8%: "+fmtd(m.vat),"TỔNG CỘNG: "+fmtd(m.tot));
   if(fv("o-note").trim())L2.push("Ghi chú: "+fv("o-note").trim());
   if(lang!=="vi")L2.push("(Khách xem menu bằng "+(lang==="ko"?"tiếng Hàn":"tiếng Anh")+")");
@@ -410,7 +416,8 @@ async function sendTG(){const k=L[lang],m=document.getElementById("o-msg"),b=doc
   try{const mm=money(sum().t);
     const opts={};Object.keys(cart).forEach(key=>{const t=optText(key,0,true);if(t)opts[key]=t});
     const hot=Object.keys(cart).filter(isHot);
-    const payload={phone:pDigits(fv("o-phone")),cc,hot,type:otype,addr:fv("o-addr").trim(),geo:geo?mapUrl(geo):"",acc:geo?Math.round(geo.acc):0,cart,opts,total:mm.tot,note:fv("o-note").trim(),lang,page:/test\.html$/.test(location.pathname)?"test":"index",hp:fv("o-hp")};
+    const combo={};Object.keys(cart).filter(x=>x.startsWith("combo:")).forEach(x=>{const r=comboX(x);combo[x]={chk:r.chk,sideName:r.sideName||"",side:r.side||""}});
+    const payload={phone:pDigits(fv("o-phone")),cc,hot,combo,type:otype,addr:fv("o-addr").trim(),geo:geo?mapUrl(geo):"",acc:geo?Math.round(geo.acc):0,cart,opts,total:mm.tot,note:fv("o-note").trim(),lang,page:/test\.html$/.test(location.pathname)?"test":"index",hp:fv("o-hp")};
     const r=await fetch(ORDER_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
     const j=await r.json();if(!j.ok){const ek={closed:"closed",limit:"limit",busy:"busy",item:"stale",dine:"dineErr",phone:cc==="vn"?"badVn":"badKr"}[j.error];if(ek){m.hidden=false;m.className="msg err";m.textContent=TC[ek][k];b.disabled=false;b.textContent=TC.send[k];sending=false;return}throw new Error(j.error)}
     m.hidden=false;m.className="msg ok";m.textContent=TC.sent[k];
