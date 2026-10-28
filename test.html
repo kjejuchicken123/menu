@@ -229,7 +229,7 @@ const TC={
  pickAll:["Vui lòng chọn đủ các mục (vị sốt, có/rút xương, cay/không cay…) cho","옵션(소스, 뼈/순살, 맵기 등)을 모두 선택해 주세요","Please choose every option (sauce, bone-in/boneless, spicy…) for"],
  pickSauce:["Chọn 1–2 vị sốt cho","소스를 1–2가지 선택해 주세요:","Pick 1–2 sauces for"],
  onionY:["Có hành","파 넣기","With green onion"],onionN:["Không hành","파 빼기","No green onion"],
- cTok:["Tokbokki","떡볶이","Tteokbokki"],cFish:["Canh chả cá","어묵탕","Fish cake soup"],cBibim:["Cơm trộn","비빔밥","Bibimbap"],
+ cChk:["Gà","치킨","Chicken"],cTok:["Tokbokki","떡볶이","Tteokbokki"],cFish:["Canh chả cá","어묵탕","Fish cake soup"],cBibim:["Cơm trộn","비빔밥","Bibimbap"],
  askT:["Chia sẻ vị trí của bạn?","현재 위치를 공유할까요?","Share your location?"],
  askP:["Quán dùng vị trí hiện tại để shipper tìm đúng chỗ, giao nhanh hơn. Bấm nút bên dưới, rồi chọn \"Cho phép\" khi điện thoại hỏi.","정확하고 빠른 배달을 위해 현재 위치를 사용합니다. 아래 버튼을 누른 뒤 휴대폰에서 \"허용\"을 선택해 주세요.","We use your current location so the driver finds you faster. Tap below, then choose \"Allow\" when your phone asks."],
  askYes:["📍 Chia sẻ vị trí hiện tại","📍 현재 위치 공유","📍 Share current location"],
@@ -301,6 +301,8 @@ const SOFT_KEY="drinks:4";
 const COMBO_SP={"combo:0":TC.cTok,"combo:1":TC.cTok,"combo:2":TC.cFish,"combo:3":TC.cBibim};
 function optsOf(key){const c=key.split(":")[0],it=itemOf(key),o=[];
   if(key==="combo:0")o.push({id:"sauce",multi:2,pre:TC.sauceH,ch:TC.sauces});
+  if(key==="combo:0")o.push({id:"bone",fixed:true,pre:TC.cChk,ch:[["bl",TC.boneless]]});
+  else if(c==="combo")o.push({id:"bone",pre:TC.cChk,ch:[["bone",TC.bone],["bl",TC.boneless]]});
   if(c==="half")o.push({id:"bone",fixed:true,ch:[["bl",TC.boneless]]});
   if(c==="chicken"||c==="halfhalf")o.push({id:"bone",ch:[["bone",TC.bone],["bl",TC.boneless]]});
   if(SURCH.cats.includes(c))o.push({id:"hot",ch:[["no",TC.hotNo],["hot",TC.hotYes]]});
